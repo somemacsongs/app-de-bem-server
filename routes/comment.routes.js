@@ -5,9 +5,9 @@ import { CommentModel } from "../model/comment.model.js";
 
 const commentRouter = express.Router();
 
-commentRouter.post = ("/:idFeed", async (req,res) => {
+commentRouter.post = ("/:idFeed", isAuth, attachCurrentUser, async (req,res) => {
     try{
-
+        
 
 
     } catch (err){
