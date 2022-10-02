@@ -9,13 +9,14 @@ const feedRouter = express.Router();
 feedRouter.post = ("/:idCommunity", isAuth, attachCurrentUser, async (req,res) => {
     try{
     const user = req.currentUser;  
-    const createdFeed = await FeedModel.create({...req.body, avatar: user.avatar});
+    const createdFeed = await FeedModel.create({...req.body, avatar: user.avatar, owner: user._id});
 
-    createdFeed._doc.owner = user._id;
 
-    const {idCommunity} = req.params.idCommunity;
-    const community = await CommunityModel.findOne({ _id: idCommunity });
-    community.update({$push: {feeds: createdFeed._doc._id}}).populate("Feed");
+    // const {idCommunity} = req.params.idCommunity;
+    // const community = await CommunityModel.findOne({ _id: idCommunity });
+    // community.update({$push: {feeds: createdFeed._doc._id}}).populate("Feed");
+
+    return res.status(201).json(createdFeed);
 
 
     } catch (err){
