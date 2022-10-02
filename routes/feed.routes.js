@@ -2,12 +2,20 @@ import express from "express";
 import isAuth from "../middlewares/isAuth.js";
 import attachCurrentUser from "../middlewares/attachCurrentUser.js";
 import { FeedModel } from "../model/feed.model.js";
+import { CommunityModel } from "../model/community.model.js";
 
 const feedRouter = express.Router();
 
-feedRouter.post = ("/:idFeed", async (req,res) => {
+feedRouter.post = ("/:idCommunity", isAuth, attachCurrentUser, async (req,res) => {
     try{
+    const user = req.currentUser;  
+    const createdFeed = await FeedModel.create({...req.body, avatar: user.avatar});
 
+    createdFeed._doc.owner = user._id;
+
+    const {idCommunity} = req.params.idCommunity;
+    const community = await CommunityModel.findOne({ _id: idCommunity });
+    community.update({$push: {feeds: createdFeed._doc._id}}).populate("Feed");
 
 
     } catch (err){

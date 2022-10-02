@@ -5,7 +5,7 @@ import { FeedModel } from "../model/mood.model.js";
 
 const moodRouter = express.Router();
 
-moodRouter.post = ("/:idMood", async (req,res) => {
+moodRouter.post = ("/:idMood", isAuth, attachCurrentUser, async (req,res) => {
     try{
 
 
