@@ -12,9 +12,10 @@ const userSchema = new Schema({
     match: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/gm,
   },
   passwordHash: { type: String, required: true },
-  role: { type: String, enum: ["ADMIN", "USER"], default: "USER" },
+  role: { type: String, enum: ["ADMIN", "USERFEM", "USERNB"], default: "USER" },
   createdAt: { type: Date, default: Date.now() },
   avatar: {type: String, default:"https://images2.imgbox.com/54/1f/hdwOJPTU_o.png"}
 });
 
 export const UserModel = model("User", userSchema);
+// oi
