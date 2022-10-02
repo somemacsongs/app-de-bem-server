@@ -8,16 +8,13 @@ const commentRouter = express.Router();
 
 commentRouter.post = ("/:idFeed", isAuth, attachCurrentUser, async (req,res) => {
     try{
-        const createdComment = await CommentModel.create({...req.body});
-        
         const user = req.currentUser;
-        createdComment._doc.owner = user._id;
+        const createdComment = await CommentModel.create({...req.body, owner: user._id});
         
         const {idFeed} = req.params.idFeed;
         const feed = await FeedModel.findOne({ _id: idFeed });
-        feed.update({$push: {commenst: createdComment._doc._id}}).populate("Comment");
+        feed.update({$push: {comments: createdComment._doc._id}}).populate("Comment");
 
-        
 
     } catch (err){
         console.log(err);
