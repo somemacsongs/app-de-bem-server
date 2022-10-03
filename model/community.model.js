@@ -4,12 +4,12 @@ const communitySchema = new Schema({
     title: {
         type: String,
         required: true,
-        minLength: 1,
+        minLength: 3,
         trim: true,
-        maxLength: 140,
-        unique: true
+        maxLength: 140
     },
     communityPic: { type: String, required: true},
+    feeds: [{ type: Schema.Types.ObjectId, ref: "Feed"}],
     createdAt: { type: Date, default: Date.now() },
 });
 

@@ -1,8 +1,8 @@
 import express from "express";
-import { isAuth } from "../middlewares/isAuth.js";
+import isAuth  from "../middlewares/isAuth.js";
 import { isAdmin } from "../middlewares/isAdmin.js";
-import { isUserFem } from "../middlewares/;
-import { isUserNB } from "../middlewares/;
+import isUserFem from "../middlewares/isUserFem.js";
+import isUserNB from "../middlewares/isUserNB.js";
 import attachCurrentUser from "../middlewares/attachCurrentUser.js";
 import { CommunityModel } from "../model/community.model.js";
 
@@ -15,7 +15,6 @@ const communityRouter = express.Router ();
         "/communityFem",
         isAuth,
         attachCurrentUser,
-        isAdmin,
         isUserFem,
         async (req, res) => {
         return res.status(200).json(req.currentUser);
@@ -27,7 +26,6 @@ const communityRouter = express.Router ();
         "/communityNB",
         isAuth,
         attachCurrentUser,
-        isAdmin,
         isUserNB,
         async (req, res) => {
         return res.status(200).json(req.currentUser);
@@ -36,11 +34,12 @@ const communityRouter = express.Router ();
 
 
 /* CRIANDO AS COMUNIDADES */
-    communityRouter.post("/community", isAuth, isAdmin, async (req, res) => {
+    communityRouter.post("/", isAuth, attachCurrentUser, isAdmin, async (req, res) => {
         try {
-            /* Não sei se isso aqui tá certo */
-            const {title, communityPic} = req.body;
-            return res.status(201).json({title, communityPic});
+
+            const createdCommunity = await CommunityModel.create({...req.body});
+            return res.status(201).json(createdCommunity);
+
         } catch (err) {
             console.log(err);
             return res.status(500).json(err);

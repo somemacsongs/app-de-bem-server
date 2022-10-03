@@ -6,6 +6,7 @@ export async function isAdmin(req, res, next) {
 
     next();
   } catch (err) {
+    console.log(req.currentUser)
     console.log(err);
     return res.status(500).json(err);
   }
