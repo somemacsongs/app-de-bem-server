@@ -5,7 +5,7 @@ import {MoodModel} from "../model/mood.model.js"
 
 const moodRouter = express.Router();
 
-moodRouter.post = ("/", isAuth, attachCurrentUser, async (req,res) => {
+moodRouter.post("/", isAuth, attachCurrentUser, async (req,res) => {
     try{
         const user = req.currentUser;  
 

@@ -6,14 +6,14 @@ import { FeedModel } from "../model/feed.model.js";
 
 const commentRouter = express.Router();
 
-commentRouter.post = ("/:idFeed", isAuth, attachCurrentUser, async (req,res) => {
+commentRouter.post("/:idFeed", isAuth, attachCurrentUser, async (req,res) => {
     try{
         const user = req.currentUser;
         const createdComment = await CommentModel.create({...req.body, owner: user._id});
         
         const {idFeed} = req.params.idFeed;
         const feed = await FeedModel.findOne({ _id: idFeed });
-        feed.update({$push: {comments: createdComment._doc._id}}).populate("Comment");
+        feed.update({$push: {comments: createdComment._id}}).populate("Comment");
 
 
     } catch (err){
