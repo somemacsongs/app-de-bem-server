@@ -5,7 +5,7 @@ const feedSchema = new Schema({
     body: { type: String, required: true, minLength: 1, trim: true, maxLength: 280 },
     owner: { type: Schema.Types.ObjectId, ref: "User" },
     comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
-    userLikesThis: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    // userLikesThis: [{ type: Schema.Types.ObjectId, ref: "User" }],
     avatar: { type: String },
     createdAt: { type: Date, default: Date.now() }
 });

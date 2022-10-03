@@ -8,6 +8,7 @@ const communitySchema = new Schema({
         trim: true,
         maxLength: 140
     },
+    whoCanSee: {type: String, default:"USERFEM", enum:["USERFEM","USERNB"]},
     communityPic: { type: String, required: true},
     feeds: [{ type: Schema.Types.ObjectId, ref: "Feed"}],
     createdAt: { type: Date, default: Date.now() },
