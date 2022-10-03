@@ -3,6 +3,7 @@ import isAuth from "../middlewares/isAuth.js";
 import attachCurrentUser from "../middlewares/attachCurrentUser.js";
 import { ReplyModel } from "../model/reply.model.js";
 import { CommentModel } from "../model/comment.model.js";
+import { UserModel } from "../model/user.model.js";
 
 const replyRouter = express.Router();
 
@@ -12,7 +13,9 @@ replyRouter.post("/:idComment", isAuth, attachCurrentUser, async (req,res) => {
         const createdReply = await ReplyModel.create({...req.body, owner: user._id, avatar: user.avatar});
         
         const idComment = req.params.idComment;
-        await CommentModel.findOneAndUpdate({ _id: idComment },{$push: {replies: createdReply._id}}).populate("Comment");
+        await CommentModel.findOneAndUpdate({ _id: idComment },{$push: {replies: createdReply._id}});
+
+        await UserModel.findOneAndUpdate({_id: user._id}, {$push:{replies: createdReply._id}});
 
         return res.status(201).json(createdReply)
     } catch (err){

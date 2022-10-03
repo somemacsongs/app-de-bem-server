@@ -1,6 +1,6 @@
 export default async function isUserNB(req, res, next) {
     try {
-      if (req.currentUser.role !== "USERNB") {
+      if (req.currentUser.role === "USERFEM") {
         return res.status(401).json({ msg: "Desculpa, essa seção é exclusiva para usuários não-binários!" });
       }
   

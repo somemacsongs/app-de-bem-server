@@ -8,29 +8,57 @@ import { CommunityModel } from "../model/community.model.js";
 
 const communityRouter = express.Router ();
 
-/* VENDO AS COMUNIDADES */
+/* VENDO TODAS AS COMUNIDADE PARA MULHERES */
 
-    /* GÊNERO FEMININO */
-    communityRouter.get(
-        "/communityFem",
-        isAuth,
-        attachCurrentUser,
-        isUserFem,
-        async (req, res) => {
-        return res.status(200).json(req.currentUser);
-        }
-    );
+communityRouter.get("/allFem", isAuth, attachCurrentUser, isUserFem, async (req, res) => {
+    try{
 
-    /* NÃO-BINÁRIO */
-    communityRouter.get(
-        "/communityNB",
-        isAuth,
-        attachCurrentUser,
-        isUserNB,
-        async (req, res) => {
-        return res.status(200).json(req.currentUser);
+        const communitiesFem = await CommunityModel.find({whoCanSee: "USERFEM"}).populate("feeds");
+
+
+        return res.status(201).json(communitiesFem);
+
+    } catch(err){
+        console.log(err);
+        return res.status(500).json(err);
+    }
+});
+
+/* VENDO TODAS AS COMUNIDADE PARA NAO-BINARIOS */
+
+communityRouter.get("/allNB", isAuth, attachCurrentUser, isUserNB, async (req, res) => {
+    try{
+
+        const communitiesNB = await CommunityModel.find({whoCanSee: "USERNB"}).populate("feeds");
+
+
+        return res.status(201).json(communitiesNB);
+
+    } catch(err){
+        console.log(err);
+        return res.status(500).json(err);
+    }
+});
+
+/* VENDO UMA COMUNIDADE */
+
+    communityRouter.get("/:idCommunity", isAuth, async (req, res) => {
+        try{
+
+            const {idCommunity} = req.params;
+            const community = await CommunityModel.findOne({_id: idCommunity}).populate("feeds");
+
+            if(!community){
+                return res.status(404).json("Community not found");
+            }
+
+            return res.status(201).json(community);
+
+        } catch(err){
+            console.log(err);
+            return res.status(500).json(err);
         }
-    );
+    });
 
 
 /* CRIANDO AS COMUNIDADES */
@@ -45,5 +73,38 @@ const communityRouter = express.Router ();
             return res.status(500).json(err);
         }
     });
+
+/* DELETANDO AS COMUNIDADES */
+
+    communityRouter.delete("/:idCommunity/delete", isAuth, attachCurrentUser, isAdmin, async (req,res) => {
+        try{
+
+            const {idCommunity} = req.params;
+            await CommunityModel.findOneAndDelete({_id: idCommunity});
+
+            return res.status(201).json("Comunidade deletada")
+
+        } catch(err){
+            console.log(err);
+            return res.status(500).json(err)
+        }
+    });
+
+/* EDITANDO AS COMUNIDADES */
+
+    communityRouter.put("/:idCommunity/edit", isAuth, attachCurrentUser, isAdmin, async (req, res) => {
+        try{
+
+            const {idCommunity} = req.params;
+            await CommunityModel.findOneAndUpdate({_id: idCommunity},{...req.body});
+            const updatedCommunity = await CommunityModel.findOne({_id: idCommunity});
+        
+            return res.status(201).json(updatedCommunity);
+
+        } catch(err){
+            console.log(err);
+            return res.status(201).json(err)
+        }
+    })
 
 export { communityRouter };
