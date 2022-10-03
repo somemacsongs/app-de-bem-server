@@ -9,13 +9,12 @@ const commentRouter = express.Router();
 commentRouter.post("/:idFeed", isAuth, attachCurrentUser, async (req,res) => {
     try{
         const user = req.currentUser;
-        const createdComment = await CommentModel.create({...req.body, owner: user._id});
+        const createdComment = await CommentModel.create({...req.body, owner: user._id, avatar: user.avatar});
         
-        const {idFeed} = req.params.idFeed;
-        const feed = await FeedModel.findOne({ _id: idFeed });
-        feed.update({$push: {comments: createdComment._id}}).populate("Comment");
+        const idFeed = req.params.idFeed;
+        await FeedModel.findOneAndUpdate({ _id: idFeed },{$push: {comments: createdComment._id}}).populate("Feed");
 
-
+        return res.status(201).json(createdComment);
     } catch (err){
         console.log(err);
         return res.status(500).json(err);
