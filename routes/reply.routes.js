@@ -10,9 +10,11 @@ const replyRouter = express.Router();
 replyRouter.post("/:idComment", isAuth, attachCurrentUser, async (req,res) => {
     try{
         const user = req.currentUser;
-        const createdReply = await ReplyModel.create({...req.body, owner: user._id, avatar: user.avatar});
+        const {idComment} = req.params;
+
+        const comment = await CommentModel.findOne({_id: idComment});
+        const createdReply = await ReplyModel.create({...req.body, owner: user._id, avatar: user.avatar, commentFrom: idComment});
         
-        const idComment = req.params.idComment;
         await CommentModel.findOneAndUpdate({ _id: idComment },{$push: {replies: createdReply._id}});
 
         await UserModel.findOneAndUpdate({_id: user._id}, {$push:{replies: createdReply._id}});

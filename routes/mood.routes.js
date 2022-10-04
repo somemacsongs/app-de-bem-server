@@ -11,7 +11,7 @@ moodRouter.post("/", isAuth, attachCurrentUser, async (req,res) => {
         const user = req.currentUser;  
 
         const createdMood = await MoodModel.create({...req.body, owner: user._id});
-        await UserModel.findOneAndUpdate({_id: user._id}, {$push:{moods: createdMood._id}}).populate("moods");
+        await UserModel.findOneAndUpdate({_id: user._id}, {$push:{moods: createdMood._id}});
 
         return res.status(201).json(createdMood);
 
