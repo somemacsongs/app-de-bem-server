@@ -106,7 +106,7 @@ commentRouter.delete("/:idComment/delete", isAuth, attachCurrentUser, async (req
         }
 
         if(user._id.toString() !== comment.owner.toString()){
-            return res.status(500).json("This comment isn't yours to delete in the first place!")
+            return res.status(423).json("This comment isn't yours to delete in the first place!")
         } 
 
         await CommentModel.findOneAndDelete({_id: idComment});
@@ -135,7 +135,7 @@ commentRouter.put("/:idComment/edit", isAuth, attachCurrentUser, async (req, res
         }
 
         if(user._id.toString() !== comment.owner.toString()){
-            return res.status(500).json("Only the owner of this comment can edit it")
+            return res.status(423).json("Only the owner of this comment can edit it")
         } 
 
         await CommentModel.findOneAndUpdate({_id: idComment},{...req.body});
@@ -146,6 +146,40 @@ commentRouter.put("/:idComment/edit", isAuth, attachCurrentUser, async (req, res
     } catch(err){
         console.log(err);
         return res.status(201).json(err)
+    }
+})
+
+//LIKE
+
+commentRouter.put("/:idComment/like", isAuth, attachCurrentUser, async (req,res) => {
+    try{
+
+        const user = req.currentUser;
+        const {idComment} = req.params;
+
+        const comment = await CommentModel.findOne({_id: idComment}).populate("usersLikeThis");
+        
+        if(!comment){
+            return res.status(404).json("Comment not found");
+        }
+
+        if(comment.usersLikeThis.includes(user._id.toString())){
+
+            await CommentModel.findOneAndUpdate({_id: idComment}, {$pull: {usersLikeThis: user._id}});
+            const updatedComment = await CommentModel.findOne({_id: idComment});
+
+            return res.status(201).json({msg: `${updatedComment.usersLikeThis.length} users like this.`, count: updatedComment.usersLikeThis.length})
+
+        } 
+
+        await CommentModel.findOneAndUpdate({_id: idComment}, {$push: {usersLikeThis: user._id}});
+        const updatedComment = await CommentModel.findOne({_id: idComment});
+
+        return res.status(201).json({msg: `${updatedComment.usersLikeThis.length} users like this.`, count: updatedComment.usersLikeThis.length})
+
+    }catch(err){
+        console.log(err);
+        return res.status(500).json(err)
     }
 })
 

@@ -107,7 +107,7 @@ feedRouter.delete("/:idFeed/delete", isAuth, attachCurrentUser, async (req,res) 
         }
 
         if(user._id.toString() !== feed.owner.toString()){
-            return res.status(500).json("This feed isn't yours to delete in the first place!")
+            return res.status(423).json("This feed isn't yours to delete in the first place!")
         } 
 
         await FeedModel.findOneAndDelete({_id: idFeed});
@@ -136,7 +136,7 @@ feedRouter.put("/:idFeed/edit", isAuth, attachCurrentUser, async (req, res) => {
         }
 
         if(user._id.toString() !== feed.owner.toString()){
-            return res.status(500).json("Only the owner of this feed can edit it")
+            return res.status(423).json("Only the owner of this feed can edit it")
         } 
 
         await FeedModel.findOneAndUpdate({_id: idFeed},{...req.body});
@@ -147,6 +147,65 @@ feedRouter.put("/:idFeed/edit", isAuth, attachCurrentUser, async (req, res) => {
     } catch(err){
         console.log(err);
         return res.status(201).json(err)
+    }
+})
+
+//LIKE
+
+feedRouter.put("/:idFeed/like", isAuth, attachCurrentUser, async (req,res) => {
+    try{
+
+        const user = req.currentUser;
+        const {idFeed} = req.params;
+
+        const feed = await FeedModel.findOne({_id: idFeed}).populate("usersLikeThis");
+        
+        if(!feed){
+            return res.status(404).json("Feed not found");
+        }
+
+        if(feed.usersLikeThis.includes(user._id.toString())){
+
+            await FeedModel.findOneAndUpdate({_id: idFeed}, {$pull: {usersLikeThis: user._id}});
+            const updatedFeed = await FeedModel.findOne({_id: idFeed});
+
+            return res.status(201).json({msg: `${updatedFeed.usersLikeThis.length} users like this.`, count: updatedFeed.usersLikeThis.length})
+
+        } 
+
+        await FeedModel.findOneAndUpdate({_id: idFeed}, {$push: {usersLikeThis: user._id}});
+        const updatedFeed = await FeedModel.findOne({_id: idFeed});
+
+        return res.status(201).json({msg: `${updatedFeed.usersLikeThis.length} users like this.`, count: updatedFeed.usersLikeThis.length})
+
+    }catch(err){
+        console.log(err);
+        return res.status(500).json(err)
+    }
+})
+
+//UNLIKE
+
+feedRouter.put("/:idFeed/unlike", isAuth, attachCurrentUser, async (req,res) => {
+    try{
+
+        const user = req.currentUser;
+        const {idFeed} = req.params;
+
+        const feed = await FeedModel.findOne({_id: idFeed});
+        
+        if(!feed){
+            return res.status(404).json("Feed not found");
+        }
+
+        await FeedModel.findOneAndUpdate({_id: idFeed}, {$pull: {usersLikeThis: user._id}});
+        const updatedFeed = await FeedModel.findOne({_id: idFeed});
+
+        return res.status(201).json({msg: `${updatedFeed.usersLikeThis.length} users like this.`, count: updatedFeed.usersLikeThis.length})
+
+    }catch(err){
+        console.log(err);
+        return res.status(500).json(err)
     }
 })
 
