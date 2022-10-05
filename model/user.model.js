@@ -11,6 +11,7 @@ const userSchema = new Schema({
     trim: true,
     match: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/gm,
   },
+  username: { type: String, required: true, trim: true },
   passwordHash: { type: String, required: true },
   role: { type: String, enum: ["ADMIN", "USERFEM", "USERNB"], default: "USERFEM" },
   createdAt: { type: Date, default: Date.now() },
