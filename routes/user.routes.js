@@ -74,14 +74,46 @@ userRouter.post("/login", async (req, res) => {
   }
 });
 
-userRouter.get(
-  "/teste",
-  isAuth,
-  attachCurrentUser,
-  isAdmin,
-  async (req, res) => {
-    return res.status(200).json(req.currentUser);
+//READ USER 
+
+userRouter.get("/:idUser", isAuth, attachCurrentUser, async (req, res) => {
+    try{
+      const {idUser} = req.params;
+      const user = await UserModel.findOne({_id: idUser});
+
+      if(!user) return res.status(404).json("User not found");
+
+      delete user._doc.passwordHash;
+
+      return res.status(200).json(user);
+
+    } catch (err){
+      console.log(err);
+      return res.status(500).json(err);
+    }
   }
 );
+
+//UPDATE USER
+
+userRouter.put("/:idUser/edit", isAuth, attachCurrentUser, async (req, res) => {
+    try{
+
+      const {idUser} = req.params;
+      const currentUser = req.createdUser;
+
+      const user = await UserModel.findOne({_id: idUser});
+
+      if(!user) return res.status(404).json("User not found");
+
+      if(currentUser._id.toString() !== idUser.toString()) return res.status(403).json("Only the user can edit their own profile");
+
+      await UserModel 
+      
+    } catch(err){
+      console.log(err);
+      return res.status(500).json(err);
+    }
+})
 
 export { userRouter };

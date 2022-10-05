@@ -12,7 +12,7 @@ const userSchema = new Schema({
     match: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/gm,
   },
   passwordHash: { type: String, required: true },
-  role: { type: String, enum: ["ADMIN", "USERFEM", "USERNB"], default: "USER" },
+  role: { type: String, enum: ["ADMIN", "USERFEM", "USERNB"], default: "USERFEM" },
   createdAt: { type: Date, default: Date.now() },
   avatar: {type: String, default:"https://images2.imgbox.com/54/1f/hdwOJPTU_o.png"},
   moods: [{ type: Schema.Types.ObjectId, ref: "Mood" }],
