@@ -15,10 +15,14 @@ communityRouter.get("/all", isAuth, attachCurrentUser, async (req, res) => {
     try{
         const user = req.currentUser;
 
-        const communities = await CommunityModel.find({whoCanSee: user.role}).populate("feeds");
+        let communities = await CommunityModel.find({whoCanSee: user.role}).populate("feeds");
 
         if (user.role === "ADMIN"){
             communities = await CommunityModel.find().populate("feeds");
+        }
+
+        if(user.role == "UNDEFINED"){
+            return res.status(500).json({msg:"Please choose a gender identity first!"})
         }
 
 
