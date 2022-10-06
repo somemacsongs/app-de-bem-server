@@ -1,9 +1,10 @@
 import { Schema, model } from "mongoose";
 
-const avatars = ["https://images2.imgbox.com/54/1f/hdwOJPTU_o.png","https://images2.imgbox.com/3d/d6/kfsaSCCt_o.png","https://images2.imgbox.com/65/0c/NKDImieB_o.png"]
+
 
 const userSchema = new Schema({
   name: { type: String, required: true, trim: true },
+  username: {type: String, required: true, unique: true},
   email: {
     type: String,
     required: true,
@@ -12,7 +13,7 @@ const userSchema = new Schema({
     match: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/gm,
   },
   passwordHash: { type: String, required: true },
-  role: { type: String, enum: ["ADMIN", "USERFEM", "USERNB"], default: "USERFEM" },
+  role: { type: String, enum: ["ADMIN", "USERFEM", "USERNB", "UNDEFINED"], default: "UNDEFINED" },
   createdAt: { type: Date, default: Date.now() },
   avatar: {type: String, default:"https://images2.imgbox.com/54/1f/hdwOJPTU_o.png"},
   moods: [{ type: Schema.Types.ObjectId, ref: "Mood" }],
