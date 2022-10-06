@@ -10,12 +10,16 @@ const moodRouter = express.Router();
 
 moodRouter.post("/", isAuth, attachCurrentUser, async (req,res) => {
     try{
-
         const user = await UserModel.findOne({_id: req.currentUser._id}).populate("moods");
 
-        user.moods.map((current)=>{
-            if(current.createdAt.toString().slice(0,15) === new Date(Date.now()).toString().slice(0,15)) return res.status(401).json({msg: "You cannot set two moods in one day"});
-        })
+        if(user.moods.length!==0){
+
+            if(user.moods[user.moods.length-1].createdAt.toString().slice(0,15) === new Date(Date.now()).toString().slice(0,15)){
+                
+                return res.status(401).json({msg: "You cannot set two moods in one day"});
+            } 
+
+        }
 
         const createdMood = await MoodModel.create({...req.body, owner: user._id});
         await UserModel.findOneAndUpdate({_id: user._id}, {$push:{moods: createdMood._id}});
@@ -132,7 +136,7 @@ moodRouter.delete("/:idMood/delete", isAuth, attachCurrentUser, async (req, res)
 
         return res.status(201).json("Mood deleted");
 
-    } catch{
+    } catch (err){
         console.log(err);
         return res.status(500).json(err);
     }
