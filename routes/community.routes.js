@@ -8,31 +8,25 @@ import { CommunityModel } from "../model/community.model.js";
 
 const communityRouter = express.Router ();
 
-/* VENDO TODAS AS COMUNIDADE PARA MULHERES */
+/* VENDO TODAS AS COMUNIDADES */
 
-communityRouter.get("/allFem", isAuth, attachCurrentUser, isUserFem, async (req, res) => {
+
+communityRouter.get("/all", isAuth, attachCurrentUser, async (req, res) => {
     try{
+        const user = req.currentUser;
 
-        const communitiesFem = await CommunityModel.find({whoCanSee: "USERFEM"}).populate("feeds");
+        let communities = await CommunityModel.find({whoCanSee: user.role}).populate("feeds");
 
+        if (user.role === "ADMIN"){
+            communities = await CommunityModel.find().populate("feeds");
+        }
 
-        return res.status(201).json(communitiesFem);
-
-    } catch(err){
-        console.log(err);
-        return res.status(500).json(err);
-    }
-});
-
-/* VENDO TODAS AS COMUNIDADE PARA NAO-BINARIOS */
-
-communityRouter.get("/allNB", isAuth, attachCurrentUser, isUserNB, async (req, res) => {
-    try{
-
-        const communitiesNB = await CommunityModel.find({whoCanSee: "USERNB"}).populate("feeds");
+        if(user.role == "UNDEFINED"){
+            return res.status(500).json({msg:"Please choose a gender identity first!"})
+        }
 
 
-        return res.status(201).json(communitiesNB);
+        return res.status(201).json(communities);
 
     } catch(err){
         console.log(err);
