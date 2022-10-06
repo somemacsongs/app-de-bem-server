@@ -100,7 +100,7 @@ userRouter.put("/:idUser/edit", isAuth, attachCurrentUser, async (req, res) => {
     try{
 
       const {idUser} = req.params;
-      const currentUser = req.createdUser;
+      const currentUser = req.currentUser;
 
       const user = await UserModel.findOne({_id: idUser});
 
@@ -108,7 +108,12 @@ userRouter.put("/:idUser/edit", isAuth, attachCurrentUser, async (req, res) => {
 
       if(currentUser._id.toString() !== idUser.toString()) return res.status(403).json("Only the user can edit their own profile");
 
-      await UserModel 
+      await UserModel.findOneAndUpdate({_id: idUser}, {...req.body});
+      const updatedUser = await UserModel.findOne({_id: idUser});
+
+      delete updatedUser._doc.passwordHash;
+
+      return res.status(201).json(updatedUser);
       
     } catch(err){
       console.log(err);
