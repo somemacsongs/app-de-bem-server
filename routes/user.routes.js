@@ -62,6 +62,8 @@ userRouter.post("/login", async (req, res) => {
           email: user.email,
           _id: user._id,
           role: user.role,
+          username: user.username,
+          avatar:user.avatar
         },
         token: token,
       });
