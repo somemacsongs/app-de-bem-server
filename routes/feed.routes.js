@@ -78,13 +78,13 @@ feedRouter.get("/:idCommunity/communityFeeds", isAuth, attachCurrentUser, async 
     try{
 
         const {idCommunity} = req.params;
-        const community = await CommunityModel.findOne({_id: idCommunity}).populate("feeds");
+        const feeds = await FeedModel.find({communityFrom: idCommunity}).populate("owner");
 
-        if(!community){
-            return res.status(404).json("Community not found, no feeds to show");
+        if(!feeds){
+            return res.status(404).json("No feeds to show");
         }
 
-        return res.status(201).json(community.feeds);
+        return res.status(201).json(feeds);
 
     } catch(err){
         console.log(err);

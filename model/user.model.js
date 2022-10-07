@@ -14,7 +14,7 @@ const userSchema = new Schema({
   },
   username: { type: String, required: true, trim: true },
   passwordHash: { type: String, required: true },
-  role: { type: String, enum: ["ADMIN", "USERFEM", "USERNB", "UNDEFINED"], default: "UNDEFINED" },
+  role: { type: String, enum: ["ADMIN", "USERFEM", "USERNB", "UNDEF"], default: "UNDEF" },
   createdAt: { type: Date, default: Date.now() },
   avatar: {type: String, default:"https://images2.imgbox.com/54/1f/hdwOJPTU_o.png"},
   moods: [{ type: Schema.Types.ObjectId, ref: "Mood" }],
